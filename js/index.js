@@ -55,6 +55,15 @@ function init() {
         case "Update An Employee Role":
           updateEmployee();
           break;
+        case "Delete Department":
+          deleteDepartment();
+          break;
+        case "Delete Role":
+          deleteRole();
+          break;
+        case "Delete Employee":
+          deleteEmployee();
+          break;
         case "Quit":
           quit();
       }
@@ -128,7 +137,7 @@ let roleQuestions = [
   {
     name: "title",
     type: "input",
-    message: "Please enter the employee_role you would like to add:",
+    message: "Please enter the title of employee_role you would like to add:",
   },
   {
     name: "salary",
@@ -219,20 +228,92 @@ let updateEmployeeQuestions = [
     message:
       "Please enter the role_id for the employee you want to update (numbers only):",
   },
-]
+];
 
-function updateEmployee () {
+function updateEmployee() {
   inquirer.prompt(updateEmployeeQuestions).then((data) => {
     const sql = `UPDATE employee
     SET role_id = (?) WHERE first_name = (?)`;
-    const newData = [
-      data.role_id,
-      data.first_name,
-    ];
+    const newData = [data.role_id, data.first_name];
     db.query(sql, newData, (err) => {
       if (err) throw err;
       console.log("Your employee has been updated.");
       db.query(`SELECT * FROM employee`, (err, rows) => {
+        if (err) throw err;
+        console.table(rows);
+        init();
+      });
+    });
+  });
+}
+
+let deleteDepartmentQuestion = [
+  {
+    type: "input",
+    name: "department_name",
+    message: "Please enter the department_name you would like to delete:",
+  },
+]
+
+function deleteDepartment () {
+  inquirer.prompt(deleteDepartmentQuestion).then((data) => {
+    const sql = `DELETE FROM department WHERE
+    department_name = (?)`;
+    const newData = [data.department_name];
+    db.query(sql, newData, (err) => {
+      if (err) throw err;
+      console.log("Your department has been deleted from the database.");
+      db.query(`SELECT * FROM department`, (err, rows) => {
+        if (err) throw err;
+        console.table(rows);
+        init();
+      });
+    });
+  });
+}
+
+let deleteRoleQuestion = [
+  {
+    name: "title",
+    type: "input",
+    message: "Please enter the title of the employee_role you would like to delete:",
+  }
+]
+
+function deleteRole () {
+  inquirer.prompt(deleteRoleQuestion).then((data) => {
+    const sql = `DELETE FROM employee_role WHERE
+    title = (?)`;
+    const newData = [data.title, data.salary, data.department_id];
+    db.query(sql, newData, (err) => {
+      if (err) throw err;
+      console.log("Your employee_role has been deleted from the database.");
+      db.query(`SELECT * FROM employee_role`, (err, rows) => {
+        if (err) throw err;
+        console.table(rows);
+        init();
+      });
+    });
+  });
+}
+
+deleteEmployeeQuestions = [
+  {
+    name: "last_name",
+    type: "input",
+    message: "Please enter the last_name of the employee you want to add:",
+  }
+]
+
+function deleteEmployee () {
+  inquirer.prompt(deleteEmployeeQuestions).then((data) => {
+    const sql = `DELETE FROM employee WHERE
+    last_name = (?)`;
+    const newData = [data.first_name, data.last_name];
+    db.query(sql, newData, (err) => {
+      if (err) throw err;
+      console.log("Your employee has been deleted from the database.");
+      db.query(`SELECT * FROM employee_role`, (err, rows) => {
         if (err) throw err;
         console.table(rows);
         init();
