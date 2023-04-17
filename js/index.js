@@ -1,22 +1,9 @@
 const db = require('../config/connection')
 const inquirer = require("inquirer");
 const mysql = require("mysql2");
-const logo = require('ascii-art');
 const consoleTable = require("console.table");
 
-function displayLogo(){
-  logo.font("Employee_Tracker", 'doom', (err, rendered)=>{
-    if (err){
-        console.log(err)
-      }
-      if (rendered){
-        console.log(rendered)
-      }
-  })
-}
-
-function init() { 
-displayLogo();
+function init() {
 inquirer.prompt(
       {
       type: "list",
@@ -90,7 +77,7 @@ function viewAllEmployees() {
   db.query(query, (err, rows) => {
     if (err) throw err;
     console.table(rows);
-    load();
+    init();
   });
 }
 
@@ -99,7 +86,7 @@ function viewAllDepartments() {
   db.query(query, (err, rows) => {
     if (err) throw err;
     console.table(rows);
-    load();
+    init();
   });
 }
 
@@ -313,7 +300,7 @@ function deleteEmployee () {
   inquirer.prompt(deleteEmployeeQuestions).then((data) => {
     const sql = `DELETE FROM employee WHERE
     last_name = (?)`;
-    const newData = [data.first_name, data.last_name];
+    const newData = [data.last_name];
     db.query(sql, newData, (err) => {
       if (err) throw err;
       console.log("Your employee has been deleted from the database.");
