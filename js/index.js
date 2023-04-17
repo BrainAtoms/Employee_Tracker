@@ -1,5 +1,6 @@
 const inquirer = require("inquirer");
 const mysql = require("mysql2");
+const logo = require('ascii-art');
 const consoleTable = require("console.table");
 
 const db = mysql.createConnection(
@@ -12,9 +13,21 @@ const db = mysql.createConnection(
   console.log(`Connected to the employee_tracker database.`)
 );
 
+function displayLogo(){
+  logo.font("Employee_Tracker", 'doom', (err, rendered)=>{
+    if (err){
+        console.log(err)
+      }
+      if (rendered){
+        console.log(rendered)
+      }
+  })
+}
+
 function init() {
-  inquirer
-    .prompt({
+displayLogo();
+  inquirer.prompt(
+      {
       type: "list",
       name: "menu",
       message: "What would you like to do?",
