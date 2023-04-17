@@ -1,17 +1,8 @@
+const db = require('../config/connection')
 const inquirer = require("inquirer");
 const mysql = require("mysql2");
 const logo = require('ascii-art');
 const consoleTable = require("console.table");
-
-const db = mysql.createConnection(
-  {
-    host: "localhost",
-    user: "root",
-    password: "NeilYoung1!",
-    database: "employee_tracker_db",
-  },
-  console.log(`Connected to the employee_tracker database.`)
-);
 
 function displayLogo(){
   logo.font("Employee_Tracker", 'doom', (err, rendered)=>{
@@ -24,9 +15,9 @@ function displayLogo(){
   })
 }
 
-function init() {
+function init() { 
 displayLogo();
-  inquirer.prompt(
+inquirer.prompt(
       {
       type: "list",
       name: "menu",
@@ -99,7 +90,7 @@ function viewAllEmployees() {
   db.query(query, (err, rows) => {
     if (err) throw err;
     console.table(rows);
-    init();
+    load();
   });
 }
 
@@ -108,7 +99,7 @@ function viewAllDepartments() {
   db.query(query, (err, rows) => {
     if (err) throw err;
     console.table(rows);
-    init();
+    load();
   });
 }
 
@@ -341,3 +332,5 @@ function quit() {
 }
 
 init();
+
+
