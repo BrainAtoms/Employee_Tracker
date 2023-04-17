@@ -1,21 +1,6 @@
-// const express = require("express");
 const inquirer = require("inquirer");
 const mysql = require("mysql2");
 const consoleTable = require("console.table");
-
-// const PORT = process.env.PORT || 3001;
-// const app = express();
-
-// app.use(express.urlencoded({ extended: false }));
-// app.use(express.json());
-
-// app.use((req, res) => {
-//   res.status(404).end();
-// });
-
-// app.listen(PORT, () => {
-//   console.log(`Server running on port ${PORT}`);
-// });
 
 const db = mysql.createConnection(
   {
@@ -41,7 +26,6 @@ function init() {
         "Add A Role",
         "Add An Employee",
         "Update An Employee Role",
-        "Update An Employee Manager",
         "Delete Department",
         "Delete Role",
         "Delete Employee",
@@ -61,6 +45,15 @@ function init() {
           break;
         case "Add A Department":
           addDepartment();
+          break;
+        case "Add A Role":
+          addRole();
+          break;
+        case "Add An Employee":
+          addEmployee();
+          break;
+        case "Update An Employee Role":
+          updateEmployee();
           break;
         case "Quit":
           quit();
@@ -121,8 +114,125 @@ function addDepartment() {
     const newData = [data.department_name];
     db.query(sql, newData, (err) => {
       if (err) throw err;
-      console.log("Your department has been added to the database");
+      console.log("Your department has been added to the database.");
       db.query(`SELECT * FROM department`, (err, rows) => {
+        if (err) throw err;
+        console.table(rows);
+        init();
+      });
+    });
+  });
+}
+
+let roleQuestions = [
+  {
+    name: "title",
+    type: "input",
+    message: "Please enter the employee_role you would like to add:",
+  },
+  {
+    name: "salary",
+    type: "input",
+    message:
+      "Please enter the salary for the role you are adding (numbers only):",
+  },
+  {
+    name: "department_id",
+    type: "number",
+    message: "Please enter the department_id for the role you are adding:",
+  },
+];
+
+function addRole() {
+  inquirer.prompt(roleQuestions).then((data) => {
+    const sql = `INSERT INTO employee_role (title, salary, department_id)
+                VALUES (?, ?, ?);`;
+    const newData = [data.title, data.salary, data.department_id];
+    db.query(sql, newData, (err) => {
+      if (err) throw err;
+      console.log("Your employee_role has been added to the database.");
+      db.query(`SELECT * FROM employee_role`, (err, rows) => {
+        if (err) throw err;
+        console.table(rows);
+        init();
+      });
+    });
+  });
+}
+
+let employeeQuestions = [
+  {
+    name: "first_name",
+    type: "input",
+    message: "Please enter the first_name of the employee you want to add:",
+  },
+  {
+    name: "last_name",
+    type: "input",
+    message: "Please enter the last_name of the employee you want to add:",
+  },
+  {
+    name: "role_id",
+    type: "number",
+    message:
+      "Please enter the role_id for the employee you want to add (numbers only):",
+  },
+  {
+    name: "manager_id",
+    type: "number",
+    message:
+      "Please enter the manager_id for the employee you want to add (numbers only):",
+  },
+];
+
+function addEmployee() {
+  inquirer.prompt(employeeQuestions).then((data) => {
+    const sql = `INSERT INTO employee (first_name, last_name, role_id, manager_id)
+    VALUES (?, ?, ?, ?)`;
+    const newData = [
+      data.first_name,
+      data.last_name,
+      data.role_id,
+      data.manager_id,
+    ];
+    db.query(sql, newData, (err) => {
+      if (err) throw err;
+      console.log("Your employee has been added to the database.");
+      db.query(`SELECT * FROM employee`, (err, rows) => {
+        if (err) throw err;
+        console.table(rows);
+        init();
+      });
+    });
+  });
+}
+
+let updateEmployeeQuestions = [
+  {
+    name: "first_name",
+    type: "input",
+    message: "Please enter the first_name of the employee you want to update:",
+  },
+  {
+    name: "role_id",
+    type: "number",
+    message:
+      "Please enter the role_id for the employee you want to update (numbers only):",
+  },
+]
+
+function updateEmployee () {
+  inquirer.prompt(updateEmployeeQuestions).then((data) => {
+    const sql = `UPDATE employee
+    SET role_id = (?) WHERE first_name = (?)`;
+    const newData = [
+      data.role_id,
+      data.first_name,
+    ];
+    db.query(sql, newData, (err) => {
+      if (err) throw err;
+      console.log("Your employee has been updated.");
+      db.query(`SELECT * FROM employee`, (err, rows) => {
         if (err) throw err;
         console.table(rows);
         init();
